@@ -42,9 +42,5 @@ public class EstabelecimentosController {
 
 		diretorio.adiciona(estabelecimento);
 		result.redirectTo(this).lista();
-	}
-
-	private boolean ehbranco(String a) {
-		return Strings.isNullOrEmpty(a);
-	}
+	}	
 }
