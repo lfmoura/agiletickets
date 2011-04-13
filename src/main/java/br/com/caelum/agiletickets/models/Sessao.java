@@ -91,10 +91,12 @@ public class Sessao {
 	}
 
 	public void reserva(Integer numeroDeIngressos) {
-		this.ingressosReservados += numeroDeIngressos;
+		if (this.podeReservar(numeroDeIngressos)) {
+			this.ingressosReservados += numeroDeIngressos;
+		}
 	}
 
 	public boolean podeReservar(Integer numeroDeIngressos) {
-		return getIngressosDisponiveis() > numeroDeIngressos;
+		return getIngressosDisponiveis() >= numeroDeIngressos && numeroDeIngressos > 0;
 	}
 }
