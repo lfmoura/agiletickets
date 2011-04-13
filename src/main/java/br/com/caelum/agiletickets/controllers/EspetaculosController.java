@@ -45,6 +45,13 @@ public class EspetaculosController {
 
 	@Post @Path("/espetaculos")
 	public void adiciona(Espetaculo espetaculo) {
+		validaCadastroEspetaculo(espetaculo);
+
+		agenda.cadastra(espetaculo);
+		result.redirectTo(this).lista();
+	}
+
+	private void validaCadastroEspetaculo(Espetaculo espetaculo) {
 		if (Strings.isNullOrEmpty(espetaculo.getNome())) {
 			validator.add(new ValidationMessage("Nome do espetáculo não pode estar em branco", ""));
 		}
@@ -52,30 +59,36 @@ public class EspetaculosController {
 			validator.add(new ValidationMessage("Descrição do espetáculo não pode estar em branco", ""));
 		}
 		validator.onErrorRedirectTo(this).lista();
-
-		agenda.cadastra(espetaculo);
-		result.redirectTo(this).lista();
 	}
 
 
 	@Get @Path("/sessao/{id}")
 	public void sessao(Long id) {
 		Sessao sessao = agenda.sessao(id);
+		validaSessao(sessao);
+		result.include("sessao", sessao);
+	}
+
+	private void validaSessao(Sessao sessao) {
 		if (sessao == null) {
 			result.notFound();
 		}
-
-		result.include("sessao", sessao);
 	}
 
 	@Post @Path("/sessao/{sessaoId}/reserva")
 	public void reserva(Long sessaoId, final Integer quantidade) {
 		Sessao sessao = agenda.sessao(sessaoId);
-		if (sessao == null) {
-			result.notFound();
-			return;
-		}
+		validaReserva(quantidade, sessao);
+		sessao.reserva(quantidade);
+		result.include("message", "Sessao reservada com sucesso");
 
+		result.redirectTo(IndexController.class).index();
+	}
+
+	private void validaReserva(final Integer quantidade, Sessao sessao) {
+		if (sessao == null) {
+			result.notFound();			
+		}
 		if (quantidade < 1) {
 			validator.add(new ValidationMessage("Você deve escolher um lugar ou mais", ""));
 		}
@@ -83,13 +96,7 @@ public class EspetaculosController {
 		if (!sessao.podeReservar(quantidade)) {
 			validator.add(new ValidationMessage("Não existem ingressos disponíveis", ""));
 		}
-
 		validator.onErrorRedirectTo(this).sessao(sessao.getId());
-
-		sessao.reserva(quantidade);
-		result.include("message", "Sessao reservada com sucesso");
-
-		result.redirectTo(IndexController.class).index();
 	}
 
 	@Get @Path("/espetaculo/{espetaculoId}/sessoes")
