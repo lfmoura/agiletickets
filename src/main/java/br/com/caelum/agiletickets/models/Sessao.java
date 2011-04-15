@@ -32,6 +32,8 @@ public class Sessao {
 	private Integer ingressosReservados = 0;
 
 	private BigDecimal preco;
+	
+	private boolean comDesconto;
 
 	public Long getId() {
 		return id;
@@ -101,7 +103,15 @@ public class Sessao {
 		this.preco = preco;
 	}
 
-	public BigDecimal getPreco() {
+	public BigDecimal getPreco() {		
 		return preco;
+	}
+
+	public void setComDesconto(boolean comDesconto) {
+		this.comDesconto = comDesconto;
+	}
+
+	public boolean isComDesconto() {
+		return comDesconto;
 	}
 }
